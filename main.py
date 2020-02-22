@@ -26,6 +26,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 
 # Feature Scalling
 from sklearn.preprocessing import StandardScaler
+
 sc = StandardScaler()
 x_train = sc.fit_transform(x_train)
 x_test = sc.fit_transform(x_test)
@@ -52,4 +53,15 @@ nn.add(Dense(output_size, activation="sigmoid"))
 nn.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
 
 # Train the neural network
-nn.fit(x_train, y_train, batch_size=1, epochs=100)
+nn.fit(x_train, y_train, batch_size=10, epochs=100)
+
+# Make Prediction
+y_pred = nn.predict(x_test)
+y_pred = (y_pred > 0.5)
+
+# Comparing results
+from sklearn.metrics import confusion_matrix
+
+cm = confusion_matrix(y_test, y_pred)
+
+print("Acurracy on test:", (cm[0][0] + cm[1][1]) / len(y_test))
