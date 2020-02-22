@@ -26,7 +26,6 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 
 # Neural Network
 # import Keras OP
-import tensorflow as tf
 import keras
 from keras.models import Sequential
 from keras.layers import Dense
@@ -43,4 +42,8 @@ nn.add(Dense(nodes_per_layer, activation="relu", input_dim=input_size))
 nn.add(Dense(nodes_per_layer, activation="relu"))
 nn.add(Dense(output_size, activation="sigmoid"))
 
-nn.compile(optimizer="Adam", loss="binary_crossentropy", metrics=["accuracy"])
+# Compile the neural network
+nn.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+
+# Train the neural network
+nn.fit(x_train, y_train, batch_size=1, epochs=100)
