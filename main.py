@@ -37,6 +37,7 @@ import keras
 from keras.wrappers.scikit_learn import KerasClassifier
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.layers import Dropout
 
 
 # Inicialize the neural network
@@ -47,9 +48,12 @@ def build_classifier():
     input_size = len(x[0])  # aka 11
     output_size = 1
     nodes_per_layer = (input_size + output_size) // 2
+    drop = 0.1
 
     classifier.add(Dense(nodes_per_layer, activation="relu", input_dim=input_size))
+    classifier.add(Dropout(rate=drop))
     classifier.add(Dense(nodes_per_layer, activation="relu"))
+    classifier.add(Dropout(rate=drop))
     classifier.add(Dense(output_size, activation="sigmoid"))
 
     # Compile classifier
@@ -62,6 +66,9 @@ nn = KerasClassifier(build_fn=build_classifier, batch_size=10, epochs=10)
 # Train the neural network
 from sklearn.model_selection import cross_val_score
 accuracy = cross_val_score(estimator=nn, X=x_train, y=y_train, cv=10, n_jobs=-1)
+
+print("Media:", accuracy.mean())
+print("Variancia:", accuracy.std())
 
 # Make Prediction
 # y_pred = nn.predict(x_test)
