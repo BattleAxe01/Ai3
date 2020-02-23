@@ -29,39 +29,47 @@ from sklearn.preprocessing import StandardScaler
 
 sc = StandardScaler()
 x_train = sc.fit_transform(x_train)
-x_test = sc.fit_transform(x_test)
+x_test = sc.transform(x_test)
 
 # Neural Network
 # import Keras OP
 import keras
+from keras.wrappers.scikit_learn import KerasClassifier
 from keras.models import Sequential
 from keras.layers import Dense
 
+
 # Inicialize the neural network
-nn = Sequential()
+def build_classifier():
+    classifier = Sequential()
 
-# Adding layers
-input_size = len(x[0])  # aka 11
-output_size = 1
-nodes_per_layer = (input_size + output_size) // 2
+    # Adding layers
+    input_size = len(x[0])  # aka 11
+    output_size = 1
+    nodes_per_layer = (input_size + output_size) // 2
 
-nn.add(Dense(nodes_per_layer, activation="relu", input_dim=input_size))
-nn.add(Dense(nodes_per_layer, activation="relu"))
-nn.add(Dense(output_size, activation="sigmoid"))
+    classifier.add(Dense(nodes_per_layer, activation="relu", input_dim=input_size))
+    classifier.add(Dense(nodes_per_layer, activation="relu"))
+    classifier.add(Dense(output_size, activation="sigmoid"))
 
-# Compile the neural network
-nn.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+    # Compile classifier
+    classifier.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+    return classifier
+
+
+nn = KerasClassifier(build_fn=build_classifier, batch_size=10, epochs=10)
 
 # Train the neural network
-nn.fit(x_train, y_train, batch_size=10, epochs=100)
+from sklearn.model_selection import cross_val_score
+accuracy = cross_val_score(estimator=nn, X=x_train, y=y_train, cv=10, n_jobs=-1)
 
 # Make Prediction
-y_pred = nn.predict(x_test)
-y_pred = (y_pred > 0.5)
-
-# Comparing results
-from sklearn.metrics import confusion_matrix
-
-cm = confusion_matrix(y_test, y_pred)
-
-print("Acurracy on test:", (cm[0][0] + cm[1][1]) / len(y_test))
+# y_pred = nn.predict(x_test)
+# y_pred = (y_pred > 0.5)
+#
+# # Comparing results
+# from sklearn.metrics import confusion_matrix
+#
+# cm = confusion_matrix(y_test, y_pred)
+#
+# print("Acurracy on test:", (cm[0][0] + cm[1][1]) / len(y_test))
